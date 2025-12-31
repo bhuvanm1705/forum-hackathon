@@ -47,12 +47,12 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Smile
 };
 
-export function Sidebar() {
+export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
     const { user, loading } = useAuth();
 
     return (
-        <div className="w-64 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 min-h-screen flex flex-col fixed top-0 left-0 bottom-0 z-50">
+        <div className={cn("w-64 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 min-h-screen flex flex-col fixed top-0 left-0 bottom-0 z-50", className)}>
             <div className="flex h-14 items-center border-b border-zinc-200 px-6 dark:border-zinc-800">
                 <Link href="/" className="flex items-center gap-2 font-bold text-lg text-zinc-900 dark:text-zinc-50">
                     <span>Foru.ms</span>
