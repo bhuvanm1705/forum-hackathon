@@ -14,6 +14,8 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+    // Generate params for known threads to speed up build
+    // Falling back to dynamic rendering for others
     const threads = await getThreads();
     return threads.map((thread) => ({
         id: thread.id,
@@ -28,6 +30,11 @@ export default async function ThreadPage(props: PageProps) {
     if (!thread) {
         notFound();
     }
+
+    // Safety checks for missing data (e.g. from seeded content)
+    const authorName = thread.author?.name || 'Anonymous';
+    const authorAvatar = thread.author?.avatar;
+    const categoryName = thread.category?.name || 'General';
 
     return (
         <div className="space-y-6">
@@ -48,12 +55,12 @@ export default async function ThreadPage(props: PageProps) {
 
                 <div className="flex items-center gap-3 text-sm">
                     <div className="h-10 w-10 rounded-full bg-zinc-200 overflow-hidden">
-                        <img src={thread.author.avatar} alt={thread.author.name} className="h-full w-full object-cover" />
+                        {authorAvatar && <img src={authorAvatar} alt={authorName} className="h-full w-full object-cover" />}
                     </div>
                     <div>
-                        <div className="font-medium">{thread.author.name}</div>
+                        <div className="font-medium">{authorName}</div>
                         <div className="text-muted-foreground">
-                            Posted {formatDistanceToNow(new Date(thread.createdAt))} ago in <span className="font-medium text-foreground">{thread.category.name}</span>
+                            Posted {formatDistanceToNow(new Date(thread.createdAt))} ago in <span className="font-medium text-foreground">{categoryName}</span>
                         </div>
                     </div>
                 </div>
@@ -101,12 +108,12 @@ export default async function ThreadPage(props: PageProps) {
                     {posts.map((post) => (
                         <div key={post.id} className="flex gap-4 group">
                             <div className="h-10 w-10 rounded-full bg-zinc-200 shrink-0 overflow-hidden">
-                                <img src={post.author.avatar} alt={post.author.name} className="h-full w-full object-cover" />
+                                {post.author?.avatar && <img src={post.author.avatar} alt={post.author?.name || 'User'} className="h-full w-full object-cover" />}
                             </div>
                             <div className="flex-1 space-y-2">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-sm">{post.author.name}</span>
+                                        <span className="font-semibold text-sm">{post.author?.name || 'Anonymous'}</span>
                                         <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(post.createdAt))} ago</span>
                                     </div>
                                 </div>
