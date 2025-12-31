@@ -1,3 +1,5 @@
+'use client';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search as SearchIcon, Loader2 } from 'lucide-react';
@@ -35,11 +37,14 @@ export default function SearchPage() {
         }
 
         const lowerQuery = query.toLowerCase();
-        const results = allThreads.filter(thread =>
-            thread.title.toLowerCase().includes(lowerQuery) ||
-            thread.content.toLowerCase().includes(lowerQuery) ||
-            thread.category.name.toLowerCase().includes(lowerQuery)
-        );
+        const results = allThreads.filter(thread => {
+            const titleMatch = thread.title?.toLowerCase().includes(lowerQuery) || false;
+            const contentMatch = thread.content?.toLowerCase().includes(lowerQuery) || false;
+            // Safe check for category name
+            const categoryMatch = thread.category?.name?.toLowerCase().includes(lowerQuery) || false;
+            
+            return titleMatch || contentMatch || categoryMatch;
+        });
         setFilteredThreads(results);
     }, [query, allThreads]);
 
@@ -63,9 +68,9 @@ export default function SearchPage() {
 
             <div className="py-6">
                 {loading ? (
-                    <div className="flex justify-center py-12">
+                     <div className="flex justify-center py-12">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    </div>
+                     </div>
                 ) : query ? (
                     <div className="space-y-4">
                         <p className="text-sm text-muted-foreground mb-4">
